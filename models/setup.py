@@ -19,6 +19,8 @@ metadata = MetaData()
 job_table = Table("job_postings", metadata, autoload_with=engine)
 skills_table = Table("skills", metadata, autoload_with=engine)
 job_skill_table = Table("job_skill", metadata, autoload_with=engine)
+job_embeddings_table = Table("job_embeddings",metadata,autoload_with=engine)
+job_similarity_table = Table("job_similarity_matrix", metadata, autoload_with=engine)
 
 
 '''
@@ -46,5 +48,16 @@ jobpostings(#     FOREIGN KEY (skill_id) REFERENCES skills(id) ON DELETE CASCADE
 jobpostings(# );
 CREATE TABLE
 jobpostings=# \dt
+
+
+CREATE TABLE job_embeddings (
+    job_id INTEGER PRIMARY KEY,
+    embedding JSONB NOT NULL,
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+
+    FOREIGN KEY (job_id)
+        REFERENCES job_postings(id)
+        ON DELETE CASCADE
+);
 
 '''

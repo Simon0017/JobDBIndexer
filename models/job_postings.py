@@ -11,3 +11,9 @@ class JobPostings(Base):
         secondary=job_skill_table,
         back_populates="jobs"
     )
+
+    embedding = relationship(
+        "JobEmbeddings",
+        back_populates="job",
+        uselist=False
+    )
