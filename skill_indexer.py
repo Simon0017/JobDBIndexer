@@ -5,6 +5,7 @@ from skillNer.skill_extractor_class import SkillExtractor
 from DbIndexing.models.setup import job_table,engine,SessionLocal,job_skill_table
 from DbIndexing.models.skills import Skills
 from DbIndexing.models.job_postings import JobPostings
+from DbIndexing.models.job_embeddings import JobEmbeddings
 from sqlalchemy import select,func
 
 NLP = spacy.load('en_core_web_lg')

@@ -18,7 +18,10 @@ class DbCleaner:
     
     def delete_expired_jobs(self):
         with SessionLocal() as session:
-            stmt = delete(job_table).where(cast(job_table.c.application_deadline, DateTime) < datetime.now())
+            stmt = delete(job_table).where(
+                job_table.c.application_deadline.is_not(None),
+                cast(job_table.c.application_deadline, DateTime) < datetime.now()
+            )
             session.execute(stmt)
             session.commit()
     
@@ -71,7 +74,10 @@ class DbCleaner:
 
     def delete_old_job_postings(self):
         with SessionLocal() as session:
-            stmt = delete(job_table).where(cast(job_table.c.crawled_at, DateTime) < datetime.now() - timedelta(days=45))
+            stmt = delete(job_table).where(
+                job_table.c.crawled_at.is_not(None),
+                cast(job_table.c.crawled_at, DateTime) < datetime.now() - timedelta(days=45)
+            )
             session.execute(stmt)
             session.commit()
     
