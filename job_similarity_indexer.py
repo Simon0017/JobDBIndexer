@@ -135,11 +135,39 @@ class JobSimilarityIndexer:
         with SessionLocal() as session:
             max_job_id = session.query(func.max(job_embeddings_table.c.job_id)).scalar() or 0
             return int(max_job_id)
+        
+    def fetch_for_embeddings_not_calculated(self):
+        with SessionLocal() as session:
+            stmt = (
+                select(JobPostings.__table__.c)
+                .where(JobPostings.embedding == None)
+            )
+
+        results = session.execute(stmt).mappings().all()
+        self.rows_data = results
 
 
-# indexing pipeline
-if __name__ == "__main__":
+
+#--------------------------------------PIPELINES-------------------------------------------------
+def perfect_scenario():
+    '''Where the data follows offset'''
     indexer = JobSimilarityIndexer()
     indexer.retrieve_jobs_data()
     sim_matrix = indexer.calculate_sim_matrix()
     indexer.store_sim_matrix(sim_matrix)
+
+def calculate_for_missing_embeddings():
+    '''Recalculate similarity index and the embeddings where the embeddings missed before'''
+    indexer = JobSimilarityIndexer()
+    indexer.fetch_for_embeddings_not_calculated()
+    _ = indexer.batch_encode_all_jobs()
+
+    # new instance
+    indexer_2 = JobSimilarityIndexer()
+    indexer_2.retrieve_jobs_data()
+    sim_matrix = indexer_2.calculate_sim_matrix()
+    indexer_2.store_sim_matrix(sim_matrix)
+
+# indexing pipeline
+if __name__ == "__main__":
+    perfect_scenario()
